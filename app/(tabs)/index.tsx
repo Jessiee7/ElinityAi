@@ -1,75 +1,190 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+// app/(tabs)/index.tsx
+import DashboardCard from "@/components/DashboardCard";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
+import React, { useMemo } from "react";
+import {
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const user = {
+  name: "Suraj",
+  avatar: "https://randomuser.me/api/portraits/men/32.jpg", // Replace with your avatar logic
+};
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+const sections = [
+  {
+    data: [
+      { icon: "Group1.png", title: "Explore your daily Recommendation" },
+      { icon: "Group2.png", title: "Prompt your way to your people" },
+    ],
+  },
+  {
+    data: [
+      { icon: "Group3.png", title: "Go to your Social Home", fullWidth: true },
+    ],
+  },
+  {
+    data: [
+      { icon: "Group4.png", title: "Relationship Dashboard" },
+      { icon: "Group5.png", title: "Question Cards" },
+    ],
+  },
+  {
+    data: [
+      { icon: "Group6.png", title: "Relationship Coach" },
+      { icon: "Group6.png", title: "Relationship Pad" },
+    ],
+  },
+  {
+    data: [
+      { icon: "flower", title: "Your Relationship Home", fullWidth: true },
+    ],
+  },
+  {
+    data: [
+      { icon: "mic", title: "Voice Journal" },
+      { icon: "book", title: "Smart Journal" },
+    ],
+  },
+  {
+    data: [
+      { icon: "chatbubbles", title: "ElinityAI chat" },
+      { icon: "leaf", title: "AI coach or AI therapist" },
+    ],
+  },
+  {
+    data: [{ icon: "flower", title: "My Sanctuary", fullWidth: true }],
+  },
+];
+
+const HomeScreen = () => {
+  const renderSection = ({
+    item,
+  }: {
+    item: { data: { icon: string; title: string }[] };
+  }) => (
+    <View style={styles.sectionRow}>
+      {item.data.map(
+        (
+          card: { icon: string; title: string; fullWidth?: boolean },
+          idx: number
+        ) => (
+          <DashboardCard
+            key={card.title}
+            icon={card.icon}
+            title={card.title}
+            fullWidth={card.fullWidth}
+            onPress={() => {
+              /* navigation logic */
+            }}
+          />
+        )
+      )}
+    </View>
   );
-}
+
+  const sectionList = useMemo(() => sections, []);
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.header}>
+        <Image
+          source={require("@/assets/images/logo.png")}
+          style={styles.logo}
+        />
+        <View style={styles.headerRight}>
+          <TouchableOpacity style={styles.iconBtn}>
+            <Ionicons name="search" size={22} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push("/Profile/ProfileCreate")}
+          >
+            <Image source={{ uri: user.avatar }} style={styles.avatar} />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <Text style={styles.greeting}>Hey {user.name},</Text>
+      <Text style={styles.subtitle}>What would You like to do?</Text>
+      <FlatList
+        data={sectionList}
+        renderItem={renderSection}
+        keyExtractor={(_, idx) => `section-${idx}`}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#15173C",
+    paddingHorizontal: 12,
   },
-  stepContainer: {
-    gap: 8,
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    // marginTop: 8,
+    // marginBottom: 18,
+    justifyContent: "space-between",
+    marginVertical: 15,
+  },
+  logo: {
+    width: 35,
+    height: 35,
+    //resizeMode: "contain",
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconBtn: {
+    marginRight: 14,
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: "rgba(23, 29, 87, 0.9)",
+    borderWidth: 0.4,
+    borderColor: "#ccc",
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  greeting: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#fff",
+    marginBottom: 2,
+    marginLeft: 15,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: "#b0b3c6",
+    marginBottom: 18,
+    marginLeft: 15,
+  },
+  listContent: {
+    paddingBottom: 32,
+    paddingHorizontal: 10,
+  },
+  sectionRow: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    flexWrap: "wrap",
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
 });
+
+export default HomeScreen;
